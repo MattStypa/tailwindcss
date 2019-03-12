@@ -29,17 +29,14 @@ function resolveConfigPath(filePath) {
 
 const getConfigFunction = config => () => {
   if (_.isUndefined(config) && !_.isObject(config)) {
-    return resolveConfig([require('../defaultConfig')()])
+    return resolveConfig([require('../defaultConfig')])
   }
 
   if (!_.isObject(config)) {
     delete require.cache[require.resolve(config)]
   }
 
-  return resolveConfig([
-    _.isObject(config) ? config : require(config),
-    require('../defaultConfig')(),
-  ])
+  return resolveConfig([_.isObject(config) ? config : require(config), require('../defaultConfig')])
 }
 
 const plugin = postcss.plugin('tailwind', config => {
@@ -68,7 +65,7 @@ const plugin = postcss.plugin('tailwind', config => {
 
 plugin.defaultConfig = function() {
   // prettier-ignore
-  throw new Error("`require('tailwindcss').defaultConfig()` is no longer a function, access it instead as `require('tailwindcss/defaultConfig')()`.")
+  throw new Error("`require('tailwindcss').defaultConfig()` is no longer a function, access it instead as `require('tailwindcss/defaultConfig')`.")
 }
 
 module.exports = plugin

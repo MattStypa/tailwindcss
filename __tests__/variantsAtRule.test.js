@@ -1,6 +1,6 @@
 import postcss from 'postcss'
 import plugin from '../src/lib/substituteVariantsAtRules'
-import config from '../defaultConfig.stub.js'
+import config from '../defaultConfig.js'
 import processPlugins from '../src/util/processPlugins'
 
 function run(input, opts = config) {

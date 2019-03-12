@@ -7,16 +7,19 @@ import * as utils from '../src/cli/utils'
 describe('cli', () => {
   const inputCssPath = path.resolve(__dirname, 'fixtures/tailwind-input.css')
   const customConfigPath = path.resolve(__dirname, 'fixtures/custom-config.js')
+  let readFileSpy;
 
   beforeEach(() => {
     console.log = jest.fn()
     process.stdout.write = jest.fn()
     utils.writeFile = jest.fn()
+    readFileSpy = jest.spyOn(utils, 'readFile');
   })
 
   describe('init', () => {
     it('creates a Tailwind config file', () => {
       return cli(['init']).then(() => {
+        expect(readFileSpy).toHaveBeenCalledWith(constants.shortConfigStubFile)
         expect(utils.writeFile.mock.calls[0][0]).toEqual(constants.defaultConfigFile)
       })
     })
@@ -27,10 +30,9 @@ describe('cli', () => {
       })
     })
 
-    it('creates a Tailwind config file without comments', () => {
-      return cli(['init', '--no-comments']).then(() => {
-        expect(utils.writeFile.mock.calls[0][1]).not.toContain('/**')
-        expect(utils.writeFile.mock.calls[0][1]).toContain('//')
+    it('creates a full Tailwind config file', () => {
+      return cli(['init', '--full']).then(() => {
+        expect(readFileSpy).toHaveBeenCalledWith(constants.fullConfigStubFile)
       })
     })
   })
