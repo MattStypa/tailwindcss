@@ -1,0 +1,20 @@
+- Plugins
+  - If container plugin is not specified in plugins, disable it in corePlugins
+  - All other plugins are copied to plugins
+- Modules
+  - Any module with falsy value becomes corePlugins falsy value
+  - Other modules become variants
+    - backgroundColors becomes backgroundColor
+    - borderWidths becomes borderWidth
+    - flexbox becomes [flexDirection, flexWrap, alignItems, alignSelf, justifyContent, alignContent, flex, flexGrow, flexShrink]
+    - fonts becomes fontFamily
+    - lineHeight becomes leading
+    - lists becomes [listStylePosition, listStyleType]
+    - shadows become boxShadow
+    - svgFill becomes fill
+    - svgStroke becomes stroke
+    - textColors becomes textColor
+    - textSizes becomes fontSize
+    - textStyle becomes fontStyle
+    - tracking becomes letterSpacing
+    
