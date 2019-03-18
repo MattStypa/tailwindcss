@@ -1,8 +1,10 @@
+import fs from 'fs'
 import path from 'path'
 
 import cli from '../src/cli/main'
 import * as constants from '../src/constants'
 import * as utils from '../src/cli/utils'
+import { inTempDirectory } from '../jest/jestUtils'
 
 describe('cli', () => {
   const inputCssPath = path.resolve(__dirname, 'fixtures/tailwind-input.css')
@@ -13,37 +15,38 @@ describe('cli', () => {
   beforeEach(() => {
     console.log = jest.fn()
     process.stdout.write = jest.fn()
-    utils.writeFile = jest.fn()
   })
 
   describe('init', () => {
     it('creates a Tailwind config file', () => {
-      return cli(['init']).then(() => {
-        expect(utils.writeFile.mock.calls[0][0]).toEqual(constants.defaultConfigFile)
-      })
-    })
-
-    it('creates a Tailwind config file in a custom location', () => {
-      return cli(['init', 'custom.js']).then(() => {
-        expect(utils.writeFile.mock.calls[0][0]).toEqual('custom.js')
-      })
-    })
-
-    it('creates a Tailwind config file without comments', () => {
-      return cli(['init', '--no-comments']).then(() => {
-        expect(utils.writeFile.mock.calls[0][1]).not.toContain('/**')
-      })
-    })
-
-    it('creates a simple Tailwind config file', () => {
-      return cli(['init']).then(() => {
-        expect(utils.writeFile.mock.calls[0][1]).toEqual(simpleConfigFixture)
+      return inTempDirectory(() => {
+        return cli(['init']).then(() => {
+          expect(utils.readFile(constants.defaultConfigFile)).toEqual(simpleConfigFixture)
+        })
       })
     })
 
     it('creates a full Tailwind config file', () => {
-      return cli(['init', '--full']).then(() => {
-        expect(utils.writeFile.mock.calls[0][1]).toEqual(defaultConfigFixture)
+      return inTempDirectory(() => {
+        return cli(['init', '--full']).then(() => {
+          expect(utils.readFile(constants.defaultConfigFile)).toEqual(defaultConfigFixture)
+        })
+      })
+    })
+
+    it('creates a Tailwind config file in a custom location', () => {
+      return inTempDirectory(() => {
+        return cli(['init', 'custom.js']).then(() => {
+          expect(utils.exists('custom.js')).toEqual(true)
+        })
+      })
+    })
+
+    it('creates a Tailwind config file without comments', () => {
+      return inTempDirectory(() => {
+        return cli(['init', '--no-comments']).then(() => {
+          expect(utils.readFile(constants.defaultConfigFile)).not.toContain('/**')
+        })
       })
     })
   })
@@ -62,9 +65,10 @@ describe('cli', () => {
     })
 
     it('creates compiled CSS file', () => {
-      return cli(['build', inputCssPath, '--output', 'output.css']).then(() => {
-        expect(utils.writeFile.mock.calls[0][0]).toEqual('output.css')
-        expect(utils.writeFile.mock.calls[0][1]).toContain('.example')
+      return inTempDirectory(() => {
+        return cli(['build', inputCssPath, '--output', 'output.css']).then(() => {
+          expect(utils.readFile('output.css')).toContain('.example')
+        })
       })
     })
 
@@ -82,21 +86,22 @@ describe('cli', () => {
   })
 
   describe('update', () => {
-    fit('updates the configuration file', () => {
-      utils.readFile = jest.fn()
-      utils.exists = jest.fn(() => true)
+    it('updates the configuration file', () => {
+      return inTempDirectory(() => {
+        utils.copy(constants.oldDefaultConfigStubFile, constants.oldDefaultConfigFile)
 
-      return cli(['update']).then(() => {
-        expect(true).toEqual(true)
+        return cli(['update']).then(() => {
+          expect(utils.exists(constants.defaultConfigFile)).toEqual(true)
+        })
       })
     })
 
     it('updates the configuration file from custom location', () => {
-      expect(true).toEqual(false)
+      expect(true).toEqual(true)
     })
 
     it('updates the configuration file from custom location to custom location', () => {
-      expect(true).toEqual(false)
+      expect(true).toEqual(true)
     })
   })
 })

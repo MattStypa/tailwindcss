@@ -1,4 +1,4 @@
-import { ensureFileSync, existsSync, outputFileSync, readFileSync } from 'fs-extra'
+import { copyFileSync, ensureFileSync, existsSync, outputFileSync, readFileSync } from 'fs-extra'
 import { findKey, mapValues, startsWith, trimStart } from 'lodash'
 
 import * as colors from './colors'
@@ -97,6 +97,16 @@ export function die(...msgs) {
  */
 export function exists(path) {
   return existsSync(path)
+}
+
+/**
+ * Copies source to destination.
+ *
+ * @param {string} source
+ * @param {string} destination
+ */
+export function copy(source, destination) {
+  copyFileSync(source, destination)
 }
 
 /**
