@@ -42,7 +42,7 @@ describe('cli update transform', () => {
     expect(transform(oldConfig).variants.fill).toEqual('test')
   })
 
-  it('disabes variants using corePlugins', () => {
+  it('disables variants using corePlugins', () => {
     oldConfig.modules.float = false
     expect(transform(oldConfig).corePlugins.float).toEqual(false)
   })
