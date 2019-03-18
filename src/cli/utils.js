@@ -100,12 +100,12 @@ export function exists(path) {
 }
 
 /**
- * Copies source to destination.
+ * Copies file source to destination.
  *
  * @param {string} source
  * @param {string} destination
  */
-export function copy(source, destination) {
+export function copyFile(source, destination) {
   copyFileSync(source, destination)
 }
 

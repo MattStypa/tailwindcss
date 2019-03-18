@@ -1,4 +1,3 @@
-import fs from 'fs'
 import path from 'path'
 
 import cli from '../src/cli/main'
@@ -88,7 +87,7 @@ describe('cli', () => {
   describe('update', () => {
     it('updates the configuration file', () => {
       return inTempDirectory(() => {
-        utils.copy(constants.oldDefaultConfigStubFile, constants.oldDefaultConfigFile)
+        utils.copyFile(constants.oldDefaultConfigStubFile, constants.oldDefaultConfigFile)
 
         return cli(['update']).then(() => {
           expect(utils.exists(constants.defaultConfigFile)).toEqual(true)
@@ -97,11 +96,19 @@ describe('cli', () => {
     })
 
     it('updates the configuration file from custom location', () => {
-      expect(true).toEqual(true)
+      return inTempDirectory(() => {
+        return cli(['update', constants.oldDefaultConfigStubFile]).then(() => {
+          expect(utils.exists(constants.defaultConfigFile)).toEqual(true)
+        })
+      })
     })
 
     it('updates the configuration file from custom location to custom location', () => {
-      expect(true).toEqual(true)
+      return inTempDirectory(() => {
+        return cli(['update', constants.oldDefaultConfigStubFile, 'custom.js']).then(() => {
+          expect(utils.exists('custom.js')).toEqual(true)
+        })
+      })
     })
   })
 })

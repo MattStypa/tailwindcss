@@ -37,7 +37,7 @@ export function run(cliParams, cliOptions) {
 
     const stubFile = full ? constants.defaultConfigStubFile : constants.simpleConfigStubFile
 
-    utils.copy(stubFile, file)
+    utils.copyFile(stubFile, file)
 
     utils.log()
     utils.log(emoji.yes, 'Created Tailwind config file:', colors.file(simplePath))
