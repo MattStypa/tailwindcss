@@ -121,3 +121,13 @@ export function writeFile(path, content) {
 
   return outputFileSync(path, content)
 }
+
+/**
+ * Strips leading ./ from path
+ *
+ * @param {string} path
+ * @return {string}
+ */
+export function getSimplePath(path) {
+  return path.startWith('./') ? path.slice(2) : path
+}

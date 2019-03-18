@@ -32,8 +32,9 @@ export function run(cliParams, cliOptions) {
 
     const full = cliOptions.full
     const file = cliParams[0] || constants.defaultConfigFile
+    const simplePath = utils.getSimplePath(file)
 
-    utils.exists(file) && utils.die(chalk.bold.magenta(file), 'already exists.')
+    utils.exists(file) && utils.die(chalk.bold.magenta(simplePath), 'already exists.')
 
     const stubFile = full ? constants.defaultConfigStubFile : constants.simpleConfigStubFile
     const stub = utils.readFile(stubFile)
@@ -41,7 +42,7 @@ export function run(cliParams, cliOptions) {
     utils.writeFile(file, stub)
 
     utils.log()
-    utils.log(emoji.yes, 'Created Tailwind config file:', chalk.bold.magenta(file))
+    utils.log(emoji.yes, 'Created Tailwind config file:', chalk.bold.magenta(simplePath))
 
     utils.footer()
 
