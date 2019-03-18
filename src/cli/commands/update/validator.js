@@ -1,4 +1,4 @@
-import { every, has } from 'lodash'
+import { has } from 'lodash'
 
 const paths = [
   'options.prefix',

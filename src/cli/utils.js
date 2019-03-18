@@ -1,8 +1,7 @@
-import chalk from 'chalk'
 import { ensureFileSync, existsSync, outputFileSync, readFileSync } from 'fs-extra'
-import { findKey, mapValues, trimStart } from 'lodash'
+import { findKey, mapValues, startsWith, trimStart } from 'lodash'
 
-import commands from './commands'
+import * as colors from './colors'
 import * as emoji from './emoji'
 import packageJson from '../../package.json'
 
@@ -59,7 +58,7 @@ export function log(...msgs) {
  */
 export function header() {
   log()
-  log(chalk.bold(packageJson.name), chalk.bold.cyan(packageJson.version))
+  log(colors.bold(packageJson.name), colors.info(packageJson.version))
 }
 
 /**
@@ -76,7 +75,7 @@ export function footer() {
  */
 export function error(...msgs) {
   log()
-  console.error('  ', emoji.no, chalk.bold.red(msgs.join(' ')))
+  console.error('  ', emoji.no, colors.error(msgs.join(' ')))
 }
 
 /**
@@ -130,5 +129,5 @@ export function writeFile(path, content) {
  * @return {string}
  */
 export function getSimplePath(path) {
-  return path.startsWith('./') ? path.slice(2) : path
+  return startsWith(path, './') ? path.slice(2) : path
 }

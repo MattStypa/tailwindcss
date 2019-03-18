@@ -1,4 +1,4 @@
-import { cloneDeep, get, has, isFunction, mapValues, pick } from 'lodash'
+import { cloneDeep, get, isFunction } from 'lodash'
 
 import defaultConfig from '../../../../stubs/defaultConfig.stub.js'
 
@@ -33,6 +33,10 @@ const keyMap = {
   wordBreak: 'whitespace',
 }
 
+function isContainerPlugin(obj) {
+  return get(obj, 'plugin') === 'container'
+}
+
 export default function(oldConfig) {
   const newConfig = cloneDeep(defaultConfig)
 
@@ -44,25 +48,19 @@ export default function(oldConfig) {
   // Variants
   Object.keys(newConfig.variants).forEach(key => {
     const value = get(oldConfig.modules, get(keyMap, key, key), defaultConfig.variants[key])
-    value
-      ? (newConfig.variants[key] = value)
-      : newConfig.corePlugins[key] = false
+    value ? (newConfig.variants[key] = value) : (newConfig.corePlugins[key] = false)
   })
 
   // Options and plugins
   Object.assign(newConfig, {
     ...oldConfig.options,
-    plugins: oldConfig.plugins.filter(isFunction)
-   })
+    plugins: oldConfig.plugins.filter(isFunction),
+  })
 
-   // Container plugin
-   const containerPlugin = oldConfig.plugins.find(isContainerPlugin)
-   !containerPlugin && (newConfig.corePlugins.container = false)
-   newConfig.theme.container = get(containerPlugin, 'options', {})
+  // Container plugin
+  const containerPlugin = oldConfig.plugins.find(isContainerPlugin)
+  !containerPlugin && (newConfig.corePlugins.container = false)
+  newConfig.theme.container = get(containerPlugin, 'options', {})
 
   return newConfig
-}
-
-function isContainerPlugin(obj) {
-  return get(obj, 'plugin') === 'container'
 }

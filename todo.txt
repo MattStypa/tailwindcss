@@ -1,1 +1,7 @@
-Add colors file
+*** Now
+Add formatter to export the JSON
+Add docblocks
+
+*** Later
+Add remover of default styles
+Add simplifier
