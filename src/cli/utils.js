@@ -2,6 +2,7 @@ import chalk from 'chalk'
 import { ensureFileSync, existsSync, outputFileSync, readFileSync } from 'fs-extra'
 import { findKey, mapValues, trimStart } from 'lodash'
 
+import commands from './commands'
 import * as emoji from './emoji'
 import packageJson from '../../package.json'
 
@@ -129,5 +130,5 @@ export function writeFile(path, content) {
  * @return {string}
  */
 export function getSimplePath(path) {
-  return path.startWith('./') ? path.slice(2) : path
+  return path.startsWith('./') ? path.slice(2) : path
 }

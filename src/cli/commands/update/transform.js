@@ -1,61 +1,68 @@
-import chalk from 'chalk'
-import { get, has, isFunction, isPlainObject, mapValues } from 'lodash'
+import { cloneDeep, get, has, isFunction, mapValues, pick } from 'lodash'
 
-import * as utils from '../../utils'
 import defaultConfig from '../../../../stubs/defaultConfig.stub.js'
 
-const variantsMap = {
-  backgroundColors: ['backgroundColor'],
-  borderColors: ['borderColor'],
-  borderWidths: ['borderWidth'],
-  flex: [
-    'flexDirection',
-    'flexWrap',
-    'alignItems',
-    'alignSelf',
-    'justifyContent',
-    'alignContent',
-    'flex',
-    'flexGrow',
-    'flexShrink'
-  ],
-  fonts: ['fontFamily'],
-  leading: ['lineHeight'],
-  lists: ['listStylePosition', 'listStyleType'],
-  shadows: ['boxShadow'],
-  svgFill: ['fill'],
-  svgStroke: ['stroke'],
-  textColors: ['textColor'],
-  textSizes: ['fontSize'],
-  textStyle: ['fontStyle', 'textTransform', 'textDecoration', 'fontSmoothing'],
-  tracking: ['letterSpacing'],
-  whitespace: ['whitespace', 'wordBreak'],
+const keyMap = {
+  backgroundColor: 'backgroundColors',
+  borderColor: 'borderColors',
+  borderWidth: 'borderWidths',
+  flexDirection: 'flex',
+  flexWrap: 'flex',
+  alignItems: 'flex',
+  alignSelf: 'flex',
+  justifyContent: 'flex',
+  alignContent: 'flex',
+  flex: 'flex',
+  flexGrow: 'flex',
+  flexShrink: 'flex',
+  fontFamily: 'fonts',
+  lineHeight: 'leading',
+  listStylePosition: 'lists',
+  listStyleType: 'lists',
+  boxShadow: 'shadows',
+  fill: 'svgFill',
+  stroke: 'svgStroke',
+  textColor: 'textColors',
+  fontSize: 'textSizes',
+  fontStyle: 'textStyle',
+  textTransform: 'textStyle',
+  textDecoration: 'textStyle',
+  fontSmoothing: 'textStyle',
+  letterSpacing: 'tracking',
+  whitespace: 'whitespace',
+  wordBreak: 'whitespace',
 }
 
-//   inset: 'NEW CLASSES',
-
 export default function(oldConfig) {
-  const newConfig = {
-    ...oldConfig.options,
-    theme: {},
-    variants: oldConfig.modules,
-    corePlugins: {},
-    plugins: [],
-  }
+  const newConfig = cloneDeep(defaultConfig)
 
-  // Process variants
-  Object.keys(variantsMap).forEach(key => {
-    if (!newConfig.variants[key]) {
-      newConfig.variants[key] = defaultConfig.variants[key]
-      newConfig.corePlugins[key] = false
-    }
+  // Theme
+  Object.keys(newConfig.theme).forEach(key => {
+    newConfig.theme[key] = get(oldConfig, get(keyMap, key, key), defaultConfig.theme[key])
   })
 
-  // Process container plugin
-  const containerPlugin = newConfig.plugins.find(isPlainObject)
-  newConfig.theme.container = {...containerPlugin}
-  newConfig.plugins = newConfig.plugins.filter(isFunction)
-  !containerPlugin && (newConfig.corePlugins.container = false)
+  // Variants
+  Object.keys(newConfig.variants).forEach(key => {
+    const value = get(oldConfig.modules, get(keyMap, key, key), defaultConfig.variants[key])
+    value
+      ? (newConfig.variants[key] = value)
+      : newConfig.corePlugins[key] = false
+  })
+
+  // Options and plugins
+  Object.assign(newConfig, {
+    ...oldConfig.options,
+    plugins: oldConfig.plugins.filter(isFunction)
+   })
+
+   // Container plugin
+   const containerPlugin = oldConfig.plugins.find(isContainerPlugin)
+   !containerPlugin && (newConfig.corePlugins.container = false)
+   newConfig.theme.container = get(containerPlugin, 'options', {})
 
   return newConfig
+}
+
+function isContainerPlugin(obj) {
+  return get(obj, 'plugin') === 'container'
 }

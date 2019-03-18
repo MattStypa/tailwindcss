@@ -3,11 +3,11 @@ import nodePath from 'path'
 
 import chalk from 'chalk'
 
+import transform from './update/transform'
+import * as validator from './update/validator'
 import * as constants from '../../constants'
 import * as emoji from '../emoji'
 import * as utils from '../utils'
-
-import transform from './update/transform'
 import oldDefaultConfig from './update/oldDefaultConfig'
 
 // Needs to be updated
@@ -25,20 +25,39 @@ export function run(cliParams, cliOptions) {
   return new Promise(resolve => {
     utils.header()
 
-    const inputFile = cliParams[0]
+    // It may need to be in constants for testing
+    const inputFile = cliParams[0] || './tailwind.js'
+    const outputFile = cliParams[1] || constants.defaultConfigFile
+    const inputFileSimplePath = utils.getSimplePath(inputFile)
+    const outputFileSimplePath = utils.getSimplePath(outputFile)
 
-    // This should die with help like build
-    !inputFile && utils.die('Config file is required.')
-    !utils.exists(inputFile) && utils.die(chalk.bold.magenta(inputFile), 'does not exist.')
+    !utils.exists(inputFile) && utils.die(
+      chalk.bold.magenta(inputFileSimplePath),
+      'does not exist.'
+    )
+
+    utils.exists(outputFile) && utils.die(
+      chalk.bold.magenta(outputFileSimplePath),
+      'already exists.'
+    )
+
+    try {
+      const oldConfig = loadOldConfig(nodePath.resolve(inputFile))
+      throw new Error('test')
+    } catch (e) {
+      dieWithSupport('Unable to process:', chalk.bold.magenta(inputFileSimplePath))
+    }
+
+    const missingProperties = validator.getMissingRequiredProperties(oldConfig)
+
+    if (missingProperties.length) {
+      utils.error(chalk.bold.magenta(inputFile), 'is missing these properties:')
+      missingProperties.forEach(property => utils.log(chalk.cyan(`- ${property}`)))
+      utils.die()
+    }
 
     // Try catch here
-    const oldConfig = loadOldConfig(nodePath.resolve(inputFile))
-
-    // This dies but I dont want dies outside of here. FIX THIS
     const newConfig = transform(oldConfig)
-
-    console.log(newConfig)
-    // Do the conversion
 
     // Consolidate with default config
 
@@ -52,6 +71,17 @@ export function run(cliParams, cliOptions) {
   })
 }
 
+function dieWithSupport(...msgs) {
+  utils.error(...msgs)
+  utils.log()
+  utils.log(chalk.bold('We were unable to automatically upgrade your configuration file.'))
+  utils.log(chalk.bold('This could be the result of a non-standard format.'))
+  utils.log(chalk.bold('We would love to learn more so we can improve this tool.'))
+  utils.log()
+  utils.log(chalk.bold('Please open a ticket here: .'))
+  utils.die()
+}
+
 function loadOldConfig(file) {
   const originalRequire = module.prototype.require;
 
@@ -60,7 +90,7 @@ function loadOldConfig(file) {
       case 'tailwindcss/defaultConfig':
         return () => oldDefaultConfig
       case 'tailwindcss/plugins/container':
-        return options => options
+        return options => ({ plugin: 'container', options })
       default:
         return originalRequire.apply(this, arguments)
     }
