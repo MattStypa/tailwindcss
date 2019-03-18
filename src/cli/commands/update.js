@@ -13,6 +13,11 @@ export const usage = 'update [source] [target]'
 export const description =
   'Updates Tailwind configuration file. Default: ' + colors.file(constants.defaultConfigFile)
 
+/**
+ * Prints error messages and information about getting support to console
+ *
+ * @param {...string} msgs
+ */
 function dieWithSupport(...msgs) {
   utils.error(...msgs)
   utils.log()
@@ -25,6 +30,12 @@ function dieWithSupport(...msgs) {
   utils.die()
 }
 
+/**
+ * Loads old configuration file by replacing expected dependencies with standins
+ *
+ * @param {string} file
+ * @return {object}
+ */
 function loadOldConfig(file) {
   const originalRequire = module.prototype.require
 
@@ -44,6 +55,16 @@ function loadOldConfig(file) {
   module.prototype.require = originalRequire
 
   return ret
+}
+
+/**
+ * Formats the configuration object as importable Javascript
+ *
+ * @param {object} obj
+ * @return {string}
+ */
+function format(obj) {
+  return `module.exports = ${JSON.stringify(obj, null, 2)}`
 }
 
 /**
@@ -89,7 +110,7 @@ export function run(cliParams) {
       dieWithSupport('Unable to update:', colors.file(inputFileSimplePath))
     }
 
-    utils.writeFile(outputFile, JSON.stringify(newConfig, null, 2))
+    utils.writeFile(outputFile, format(newConfig))
 
     utils.log()
     utils.log(emoji.yes, 'Created Tailwind config file:', colors.file(outputFileSimplePath))

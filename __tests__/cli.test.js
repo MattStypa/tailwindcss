@@ -80,4 +80,23 @@ describe('cli', () => {
       })
     })
   })
+
+  describe('update', () => {
+    fit('updates the configuration file', () => {
+      utils.readFile = jest.fn()
+      utils.exists = jest.fn(() => true)
+
+      return cli(['update']).then(() => {
+        expect(true).toEqual(true)
+      })
+    })
+
+    it('updates the configuration file from custom location', () => {
+      expect(true).toEqual(false)
+    })
+
+    it('updates the configuration file from custom location to custom location', () => {
+      expect(true).toEqual(false)
+    })
+  })
 })

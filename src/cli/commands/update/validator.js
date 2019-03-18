@@ -85,6 +85,12 @@ const paths = [
   'plugins',
 ]
 
+/**
+ * Gets a list of paths that do not exist in the provided object
+ *
+ * @param {object} config
+ * @return {string[]}
+ */
 export function getMissingRequiredProperties(config) {
   return paths.filter(path => !has(config, path))
 }

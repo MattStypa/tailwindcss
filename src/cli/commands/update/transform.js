@@ -12,7 +12,6 @@ const keyMap = {
   alignSelf: 'flex',
   justifyContent: 'flex',
   alignContent: 'flex',
-  flex: 'flex',
   flexGrow: 'flex',
   flexShrink: 'flex',
   fontFamily: 'fonts',
@@ -29,14 +28,25 @@ const keyMap = {
   textDecoration: 'textStyle',
   fontSmoothing: 'textStyle',
   letterSpacing: 'tracking',
-  whitespace: 'whitespace',
   wordBreak: 'whitespace',
 }
 
+/**
+ * Checks if the provided object is a container plugin standin
+ *
+ * @param {object} obj
+ * @return {boolean}
+ */
 function isContainerPlugin(obj) {
   return get(obj, 'plugin') === 'container'
 }
 
+/**
+ * Transforms old configuration format to new configuration format
+ *
+ * @param {object} oldConfig
+ * @return {object}
+ */
 export default function(oldConfig) {
   const newConfig = cloneDeep(defaultConfig)
 

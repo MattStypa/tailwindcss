@@ -1,7 +1,13 @@
 *** Now
-Add formatter to export the JSON
-Add docblocks
+Add tests for:
+  - update
+  - transformer
+  - validator
 
 *** Later
+List what file is used for building
 Add remover of default styles
 Add simplifier
+Better formatting
+Use CLI build tools for building release
+More tests
