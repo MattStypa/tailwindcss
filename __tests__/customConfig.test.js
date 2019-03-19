@@ -3,7 +3,7 @@ import path from 'path'
 import postcss from 'postcss'
 import tailwind from '../src/index'
 import { defaultConfigFile } from '../src/constants'
-import { inTempDirectory } from '../jest/jestUtils'
+import inTempDirectory from '../jest/runInTempDirectory'
 
 test('it uses the values from the custom config file', () => {
   return postcss([tailwind(path.resolve(`${__dirname}/fixtures/custom-config.js`))])

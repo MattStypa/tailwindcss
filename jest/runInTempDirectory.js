@@ -5,7 +5,7 @@ import rimraf from 'rimraf'
 
 const tmpPath = path.resolve(__dirname, '../__tmp')
 
-export function inTempDirectory(callback) {
+export default function(callback) {
   return new Promise(resolve => {
     const currentPath = process.cwd()
 

@@ -78,8 +78,7 @@ export function run(cliParams) {
   return new Promise(resolve => {
     utils.header()
 
-    // It may need to be in constants for testing
-    const inputFile = cliParams[0] || './tailwind.js'
+    const inputFile = cliParams[0] || constants.oldDefaultConfigFile
     const outputFile = cliParams[1] || constants.defaultConfigFile
     const inputFileSimplePath = utils.getSimplePath(inputFile)
     const outputFileSimplePath = utils.getSimplePath(outputFile)

@@ -3,7 +3,7 @@ import path from 'path'
 import cli from '../src/cli/main'
 import * as constants from '../src/constants'
 import * as utils from '../src/cli/utils'
-import { inTempDirectory } from '../jest/jestUtils'
+import runInTempDirectory from '../jest/runInTempDirectory'
 
 describe('cli', () => {
   const inputCssPath = path.resolve(__dirname, 'fixtures/tailwind-input.css')
@@ -18,7 +18,7 @@ describe('cli', () => {
 
   describe('init', () => {
     it('creates a Tailwind config file', () => {
-      return inTempDirectory(() => {
+      return runInTempDirectory(() => {
         return cli(['init']).then(() => {
           expect(utils.readFile(constants.defaultConfigFile)).toEqual(simpleConfigFixture)
         })
@@ -26,7 +26,7 @@ describe('cli', () => {
     })
 
     it('creates a full Tailwind config file', () => {
-      return inTempDirectory(() => {
+      return runInTempDirectory(() => {
         return cli(['init', '--full']).then(() => {
           expect(utils.readFile(constants.defaultConfigFile)).toEqual(defaultConfigFixture)
         })
@@ -34,17 +34,9 @@ describe('cli', () => {
     })
 
     it('creates a Tailwind config file in a custom location', () => {
-      return inTempDirectory(() => {
+      return runInTempDirectory(() => {
         return cli(['init', 'custom.js']).then(() => {
           expect(utils.exists('custom.js')).toEqual(true)
-        })
-      })
-    })
-
-    it('creates a Tailwind config file without comments', () => {
-      return inTempDirectory(() => {
-        return cli(['init', '--no-comments']).then(() => {
-          expect(utils.readFile(constants.defaultConfigFile)).not.toContain('/**')
         })
       })
     })
@@ -64,7 +56,7 @@ describe('cli', () => {
     })
 
     it('creates compiled CSS file', () => {
-      return inTempDirectory(() => {
+      return runInTempDirectory(() => {
         return cli(['build', inputCssPath, '--output', 'output.css']).then(() => {
           expect(utils.readFile('output.css')).toContain('.example')
         })
@@ -86,7 +78,7 @@ describe('cli', () => {
 
   describe('update', () => {
     it('updates the configuration file', () => {
-      return inTempDirectory(() => {
+      return runInTempDirectory(() => {
         utils.copyFile(constants.oldDefaultConfigStubFile, constants.oldDefaultConfigFile)
 
         return cli(['update']).then(() => {
@@ -96,7 +88,7 @@ describe('cli', () => {
     })
 
     it('updates the configuration file from custom location', () => {
-      return inTempDirectory(() => {
+      return runInTempDirectory(() => {
         return cli(['update', constants.oldDefaultConfigStubFile]).then(() => {
           expect(utils.exists(constants.defaultConfigFile)).toEqual(true)
         })
@@ -104,7 +96,7 @@ describe('cli', () => {
     })
 
     it('updates the configuration file from custom location to custom location', () => {
-      return inTempDirectory(() => {
+      return runInTempDirectory(() => {
         return cli(['update', constants.oldDefaultConfigStubFile, 'custom.js']).then(() => {
           expect(utils.exists('custom.js')).toEqual(true)
         })
